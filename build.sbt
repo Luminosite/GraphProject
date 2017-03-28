@@ -7,7 +7,7 @@ import uk.gov.hmrc.gitstamp.GitStampPlugin._
 name := "BSLOffline"
 
 // Don't forget to set the version
-version := "2.0.12-SNAPSHOT"
+version := "0.0.1-SNAPSHOT"
 
 // Org
 organization := "com.paypal.risk.grs"
@@ -17,8 +17,6 @@ licenses := Seq("Apache-2.0" -> url("http://opensource.org/licenses/Apache-2.0")
 
 // scala version to be used
 scalaVersion := "2.11.6"
-// force scalaVersion
-//ivyScala := ivyScala.value map { _.copy(overrideScalaVersion = true) }
 
 // spark version to be used
 val sparkVersion = "1.6.0"
@@ -58,142 +56,43 @@ resolvers ++= Seq(
 
 
 /// Dependencies
-
 // copy all dependencies into lib_managed/
 retrieveManaged := true
 
-// scala modules (should be included by spark, just an exmaple)
-//libraryDependencies ++= Seq(
-//  "org.scala-lang" % "scala-reflect" % scalaVersion.value,
-//  "org.scala-lang" % "scala-compiler" % scalaVersion.value
-//  )
-
 val sparkDependencyScope = "provided"
+
 // spark modules (should be included by spark-sql, just an example)
 libraryDependencies ++= Seq(
-/*
-  "org.apache.spark" %% "spark-core" % sparkVersion,
-  "org.apache.spark" %% "spark-sql" % sparkVersion,
-  "org.apache.spark" %% "spark-hive" % sparkVersion
-  */
-//"org.apache.spark" %% "spark-core" % sparkVersion % sparkDependencyScope,
   "org.apache.spark" %% "spark-core" % sparkVersion,
   "org.apache.spark" %% "spark-graphx" % sparkVersion,
-"org.apache.spark" %% "spark-sql" % sparkVersion % sparkDependencyScope,
-"org.apache.spark" %% "spark-hive" % sparkVersion % sparkDependencyScope
-
-  /* ,
-  "org.apache.spark" %% "spark-streaming" % sparkVersion ,
-  "org.apache.spark" %% "spark-streaming-kafka" % sparkVersion*/
+  "org.apache.spark" %% "spark-sql" % sparkVersion % sparkDependencyScope,
+  "org.apache.spark" %% "spark-hive" % sparkVersion % sparkDependencyScope
 )
-/*
-libraryDependencies += "org.apache.kafka" % "kafka-clients" % "0.8.2.0"
-*/
-
-// graphx
-//libraryDependencies += "org.apache.spark" % "spark-core_2.11" % "2.1.0"
 // logging
 libraryDependencies += "com.typesafe.scala-logging" %% "scala-logging-slf4j" % "2.1.2"
 libraryDependencies += "com.holdenkarau" %% "spark-testing-base" % "1.5.1_0.2.1" %"provided"
-//libraryDependencies += "org.clapper" % "grizzled-slf4j_2.11" % "1.0.2"
-
 // testing
 libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.4" % "test"
-
-//libraryDependencies += "com.google.guava" % "guava" % "14.0.1" force()
 
 libraryDependencies += "org.scalacheck" %% "scalacheck" % "1.12.2" % "test"
 libraryDependencies += "org.apache.pig" % "pig" % "0.14.0" excludeAll (ExclusionRule(organization = "org.mortbay.jetty"), ExclusionRule(organization="com.google.guava")) classifier "h2"
 libraryDependencies += "com.github.scopt" %% "scopt" % "3.5.0"
 
 checksums in update := Nil
-/// Compiler plugins
 
+/// Compiler plugins
 // linter: static analysis for scala
 resolvers += "Linter Repository" at "https://hairyfotr.github.io/linteRepo/releases"
 
 coverageHighlighting := false
 
-//addCompilerPlugin("com.foursquare.lint" %% "linter" % "0.1.8")
-
-/*val commonVoVersion = "2.91"
-val paypalInfraVersion = "13.4.3"
-libraryDependencies ++= Seq(
-  "com.paypal.risk.idi" % "common-vo" % commonVoVersion  exclude(
-    "com.paypal.infra","infra"
-    //ExclusionRule(organization = "org.apache")
-    )/* exclude ("com.paypal.infra", "infra-core")*/,
-  "com.paypal.infra" % "infra-core" % paypalInfraVersion
-)*/
-
 libraryDependencies += "org.scalamock" %% "scalamock-scalatest-support" % "3.2" % "test"
-//libraryDependencies += "com.paypal.risk.grs" %% "spark-pig-loader" % "0.1.3-SNAPSHOT"
 libraryDependencies += "org.apache.commons" % "commons-lang3" % "3.4"
-
 libraryDependencies += "com.github.nscala-time" %% "nscala-time" % "1.8.0" exclude(
-  "com.google.guava", "guava"
-  )
-
-//coverageEnabled := true
-
-/*
-libraryDependencies ++= Seq(
-  "org.codehaus.jackson" % "jackson-core-asl" % "1.9.13" force(),
-  "org.codehaus.jackson" % "jackson-mapper-asl" % "1.9.13" force()
-)
-*/
-
+  "com.google.guava", "guava")
 packExcludeJars := Seq("jackson-.*\\.jar")
 
-/*libraryDependencies ++= Seq("com.paypal.infra" % "infra-core" % "13.4.3"//,
-/*"com.paypal.infra" % "infra" % "13.4.3",*/
-/*"org.slf4j"%"slf4j-api"%"1.7.10" *//*,
-"org.slf4j"%"slf4j-log4j12"%"1.6.4" force()*/)*/
-
-//libraryDependencies ++= Seq("com.paypal.risk.ars.linking" % "lion.normalizers" % "3.2.0")
-
-/// console
-
-// define the statements initially evaluated when entering 'console', 'consoleQuick', or 'consoleProject'
-// but still keep the console settings in the sbt-spark-package plugin
-
-// If you want to use yarn-client for spark cluster mode, override the environment variable
-// SPARK_MODE=yarn-client <cmd>
 val sparkMode = sys.env.getOrElse("SPARK_MODE", "local[2]")
-
-/*
-
-initialCommands in console :=
-  s"""
-    |import org.apache.spark.SparkConf
-    |import org.apache.spark.SparkContext
-    |import org.apache.spark.SparkContext._
-    |
-    |@transient val sc = new SparkContext(
-    |  new SparkConf()
-    |    .setMaster("$sparkMode")
-    |    .setAppName("Console test"))
-    |implicit def sparkContext = sc
-    |import sc._
-    |
-    |@transient val sqlc = new org.apache.spark.sql.SQLContext(sc)
-    |implicit def sqlContext = sqlc
-    |import sqlc._
-    |
-    |def time[T](f: => T): T = {
-    |  import System.{currentTimeMillis => now}
-    |  val start = now
-    |  try { f } finally { println("Elapsed: " + (now - start)/1000.0 + " s") }
-    |}
-    |
-    |""".stripMargin
-
-cleanupCommands in console :=
-  s"""
-     |sc.stop()
-   """.stripMargin
-
-*/
 
 /// scaladoc
 scalacOptions in (Compile,doc) ++= Seq("-groups", "-implicits",
@@ -204,36 +103,6 @@ scalacOptions in (Compile,doc) ++= Seq("-groups", "-implicits",
   )
 
 autoAPIMappings := true
-
-
-/// publishing
-publishMavenStyle := true
-
-publishTo := {
-  val nexus = "http://nexus.paypal.com/nexus/content/repositories/"
-  if (version.value.trim.endsWith("SNAPSHOT"))
-    Some("snapshots" at nexus + "snapshots")
-  else
-    Some("releases"  at nexus + "releases")
-}
-
-// http://www.scala-sbt.org/0.13.5/docs/Detailed-Topics/Publishing.html#credentials
-credentials += Credentials(Path.userHome / ".ivy2" / ".credentials")
-
-pomExtra := (
-  <url>https://github.paypal.com/RiskDataScience/NRTLinking</url>
-    <scm>
-      <url>git@github.paypal.com:RiskDataScience/NRTLinking.git</url>
-      <connection>scm:git@github.paypal.com:RiskDataScience/NRTLinking.git</connection>
-    </scm>
-    <developers>
-      <developer>
-        <id>chufang</id>
-        <name>Mike Fang</name>
-        <url>https://github.paypal.com/chufang</url>
-      </developer>
-    </developers>)
-
 
 /// Assembly
 // skip test in assembly
@@ -249,11 +118,3 @@ assemblyExcludedJars in assembly := {
     cp.data.getName.startsWith("scalac-scapegoat-plugin") || cp.data.getName.startsWith("scaldi")
   }
 }
-
-// publishing the fat jar
-// artifact in (Compile, assembly) := {
-//   val art = (artifact in (Compile, assembly)).value
-//   art.copy(`classifier` = Some("assembly"))
-// }
-
-// addArtifact(artifact in (Compile, assembly), assembly)
