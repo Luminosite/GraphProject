@@ -32,6 +32,7 @@ object GraphTrial extends ContextHelper with App{
         Edge(6L, 10L, 11),
         Edge(9L, 10L, 19),
         Edge(8L, 11L, 20),
+        Edge(8L, 11L, 21),
         Edge(5L, 11L, 16)))
     // Build the initial Graph
     val graph = Graph[Double, Int](users, relationships)
